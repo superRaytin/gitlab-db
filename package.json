@@ -10,7 +10,8 @@
   "scripts": {
     "lint": "eslint --ext .js src",
     "build": "babel src --out-dir dist",
-    "test": "npm run build && node ./node_modules/mocha-webpack/bin/mocha-webpack --webpack-config webpack.test.config.js \"test/*.test.js\""
+    "test": "npm run build && node ./node_modules/mocha-webpack/bin/mocha-webpack --webpack-config webpack.test.config.js \"test/*.test.js\"",
+    "publish": "npm run build && npm publish"
   },
   "dependencies": {
     "gitlab": "^1.7.1",

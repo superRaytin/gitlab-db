@@ -14,9 +14,9 @@ import GitLabDB from 'gitlab-db'
 
 // Instantiate a database
 const db = new GitLabDB('yourDbName', {
-	url: 'http://gitlab.example.com',
-	token: 'your_access_token',
-	repo: 'groupName/repoName',
+  url: 'http://gitlab.example.com',
+  token: 'your_access_token',
+  repo: 'groupName/repoName',
 })
 
 // Create a collection
@@ -42,7 +42,7 @@ db.createCollection('project', [{ a: 1, b: 2 }])
 
 ### Test
 
-Config your environment variables `GITLAB_URL` `ACCESS_TOKEN` `REPO`, run tests with:
+Config your environment variables `GITLAB_URL` `ACCESS_TOKEN` `REPO`, and run tests with:
 
 ```
 GITLAB_URL={your_gitlab_url} ACCESS_TOKEN={your_access_token} REPO={yourGroup/yourRepo} npm run test
