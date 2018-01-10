@@ -1,0 +1,42 @@
+{
+  "name": "gitlab-db",
+  "version": "0.0.1",
+  "description": "A lightweight GitLab based JSON database with Mongo-style API",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/superraytin/gitlab-db.git"
+  },
+  "main": "dist/main.js",
+  "scripts": {
+    "lint": "eslint --ext .js src",
+    "build": "babel src --out-dir dist",
+    "test": "npm run build && node ./node_modules/mocha-webpack/bin/mocha-webpack --webpack-config webpack.test.config.js \"test/*.test.js\""
+  },
+  "dependencies": {
+    "gitlab": "^1.7.1",
+    "mingo": "^2.1.1",
+    "uuid": "^3.1.0"
+  },
+  "devDependencies": {
+    "assert": "^1.4.1",
+    "babel-cli": "^6.26.0",
+    "babel-loader": "^7.0.0",
+    "babel-core": "^6.26.0",
+    "babel-eslint": "^8.0.1",
+    "babel-plugin-transform-class-properties": "^6.24.1",
+    "babel-plugin-transform-es2015-classes": "^6.24.1",
+    "babel-plugin-transform-object-rest-spread": "^6.26.0",
+    "babel-preset-env": "^1.6.0",
+    "chai": "^4.0.0",
+    "chai-as-promised": "^7.1.1",
+    "eslint": "^4.7.2",
+    "eslint-config-airbnb-base": "^12.0.0",
+    "eslint-plugin-import": "^2.7.0",
+    "eslint-plugin-node": "^5.1.1",
+    "mocha": "^4.1.0",
+    "mocha-webpack": "^1.0.1",
+    "request-promise": "^4.2.2",
+    "webpack": "^2.6.1",
+    "webpack-node-externals": "^1.6.0"
+  }
+}
