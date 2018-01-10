@@ -1,6 +1,13 @@
 # gitlab-db
 A lightweight GitLab based JSON database with Mongo-style API. Backed by [node-gitlab](https://github.com/node-gitlab/node-gitlab) and [mingo](https://github.com/kofrasa/mingo).
 
+[![NPM version][npm-image]][npm-url]
+[![Downloads][downloads-image]][npm-url]
+
+[npm-url]: https://npmjs.org/package/gitlab-db
+[downloads-image]: http://img.shields.io/npm/dm/gitlab-db.svg
+[npm-image]: http://img.shields.io/npm/v/gitlab-db.svg
+
 ### Install
 
 ```
