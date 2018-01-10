@@ -1,5 +1,5 @@
 # gitlab-db
-A lightweight GitLab based JSON database with Mongo-style API.
+A lightweight GitLab based JSON database with Mongo-style API. Backed by [node-gitlab](https://github.com/node-gitlab/node-gitlab) and [mingo](https://github.com/kofrasa/mingo).
 
 ### Install
 
