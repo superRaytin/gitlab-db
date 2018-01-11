@@ -83,7 +83,7 @@ export default class GitLabDB {
     return this.find().then((content) => {
       const record = newRecord(data)
       content.push(record)
-      return this._writeFileContent(content).then(() => meta)
+      return this._writeFileContent(content).then(() => ({ ...meta, record }))
     })
   }
   remove(query) {

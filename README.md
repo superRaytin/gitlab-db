@@ -42,10 +42,17 @@ db.collection('project').find({ name: 'test', ... })
 db.createCollection('project', [{ a: 1, b: 2 }])
 ```
 
+### Check if a collection exists
+
+```js
+db.isCollectionExists('project')
+```
+
 ### Next
 
 - [ ] multi save
 - [ ] model check
+- [ ] collection deletion
 
 ### Test
 

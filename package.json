@@ -1,6 +1,6 @@
 {
   "name": "gitlab-db",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A lightweight GitLab based JSON database with Mongo-style API",
   "repository": {
     "type": "git",
@@ -36,7 +36,6 @@
     "eslint-plugin-node": "^5.1.1",
     "mocha": "^4.1.0",
     "mocha-webpack": "^1.0.1",
-    "request-promise": "^4.2.2",
     "webpack": "^2.6.1",
     "webpack-node-externals": "^1.6.0"
   }

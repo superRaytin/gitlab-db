@@ -59,7 +59,7 @@ describe('GitLabDB', function() {
   })
 
   it('should save passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).save(newProject)).eventually.to.eql({ added: 1 }).notify(done)
+    expect(gitlabDB.collection(testCollectionName).save(newProject)).eventually.to.have.a.property('added').notify(done)
   })
 
   it('should remove passed', (done) => {
