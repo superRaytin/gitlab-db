@@ -46,7 +46,7 @@ Repository structure will be:
 
 ## API
 
-### GitLabDB(dbName, options)
+### constructor(dbName, options)
 
 Instantiate a database.
 
