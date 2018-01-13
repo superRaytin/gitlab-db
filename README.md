@@ -8,45 +8,97 @@ A lightweight GitLab based JSON database with Mongo-style API. Backed by [node-g
 [downloads-image]: http://img.shields.io/npm/dm/gitlab-db.svg
 [npm-image]: http://img.shields.io/npm/v/gitlab-db.svg
 
-### Install
+## Install
 
 ```
 npm i gitlab-db
 ```
 
-### Usage
+## Quick Start
 
 ```js
 import GitLabDB from 'gitlab-db'
 
 // Instantiate a database
-const db = new GitLabDB('yourDbName', {
+const db = new GitLabDB('apple', {
   url: 'http://gitlab.example.com',
   token: 'your_access_token',
-  repo: 'groupName/repoName',
+  repo: 'group/repo',
 })
 
 // Create a collection
-db.createCollection('project')
+db.createCollection('product')
 
 // CRUD
-db.collection('project').save({ name: 'test', ... })
-db.collection('project').remove({ name: 'test', ... })
-db.collection('project').update({ name: 'test', ... }, { name: 'test1' })
-db.collection('project').find({ name: 'test', ... })
+db.collection('product').save({ name: 'iphone', v: '8', price: 699 })
+db.collection('product').find({ name: 'iphone' })
+db.collection('product').update({ name: 'iphone', v: '8' }, { price: 599 })
+db.collection('product').remove({ name: 'iphone', v: '7' })
 ```
 
-### Create a collection with default data
+Repository structure will be:
 
-```js
-db.createCollection('project', [{ a: 1, b: 2 }])
+```
+└── <repository root>
+    ├── apple
+    │   └── product.json
 ```
 
-### Check if a collection exists
+## API
 
-```js
-db.isCollectionExists('project')
-```
+### GitLabDB(dbName, options)
+
+Instantiate a database.
+
+- **dbName:** `String` Name of the database you want to create.
+- **options:** `Object`
+  - **url:** `String` Specify gitlab url, eg: `http://gitlab.example.com`.
+  - **token:** `String` Specify your personal access token.
+  - **repo:** `String` Specify repository name and group belongs to, format: `group/repo`.
+
+### db.createCollection(collectionName [, documents])
+
+Create a collection.
+
+- **collectionName:** `String` Name of the collection you want to create.
+- **documents:** `Array` Optional. Specifies default data of the collection about to be created.
+
+### db.collection(collectionName)
+
+Connect to a collection.
+
+- **collectionName:** `String` Name of the collection you want to connect.
+
+### db.collection(collectionName).save(document)
+
+Inserts a new document.
+
+- **document:** `Object` A document to save to the collection.
+
+### db.collection(collectionName).find([query])
+
+Selects documents in a collection.
+
+- **query:** `Object` Optional. Specifies selection filter using query operators. To return all documents in a collection, omit this parameter or pass an empty document ({}).
+
+### db.collection(collectionName).update(query, update)
+
+Modifies an existing document or documents in a collection.
+
+- **query:** `Object` The selection criteria for the update. The same query selectors as in the find() method are available.
+- **update:** `Object` The modifications to apply.
+
+### db.collection(collectionName).remove(query)
+
+Removes documents from a collection.
+
+- **query:** `Object` Specifies deletion criteria using query operators.
+
+### db.isCollectionExists(collectionName)
+
+Check if a collection exists.
+
+- **collectionName:** `String` Name of the collection you want to check.
 
 ### Next
 
