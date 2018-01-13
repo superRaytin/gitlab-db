@@ -1,8 +1,8 @@
 import GitLab from 'gitlab'
 import Mingo from 'mingo'
-import { newRecord, newCollection, updateModifiedTime, promiseAllSerial } from './utils'
+import { createNewDocument, createNewCollection, updateModifiedTime, promiseAllSerial } from './utils'
 
-export default class GitLabDB {
+module.exports = class GitLabDB {
   constructor(dbName, options = {}) {
     const defaultOptions = {
       branch: 'master',
@@ -48,8 +48,8 @@ export default class GitLabDB {
       })
     })
   }
-  createCollection(collectionName, content = []) {
-    const initialContent = newCollection(content)
+  createCollection(collectionName, documents = []) {
+    const initialContent = createNewCollection(documents)
     const { dbName } = this
     const { repo, branch } = this.options
     return new Promise((resolve, reject) => {
@@ -67,47 +67,47 @@ export default class GitLabDB {
       })
     })
   }
-  createCollections(collectionNames, contents = []) {
-    const promises = collectionNames.map((collectionName, index) => () => this.createCollection(collectionName, contents[index]))
+  createCollections(collectionNames, documentsArray = []) {
+    const promises = collectionNames.map((collectionName, index) => () => this.createCollection(collectionName, documentsArray[index]))
     return promiseAllSerial(promises)
   }
   collection(collectionName) {
     this.collectionName = collectionName
     return this
   }
-  save(data) {
+  save(document) {
     const meta = {
       added: 1,
     }
-    // get full content
-    return this.find().then((content) => {
-      const record = newRecord(data)
-      content.push(record)
-      return this._writeFileContent(content).then(() => ({ ...meta, record }))
+    // get all documents
+    return this.find().then((documents) => {
+      const newDocument = createNewDocument(document)
+      documents.push(newDocument)
+      return this._writeFileContent(documents).then(() => ({ ...meta, document: newDocument }))
     })
   }
   remove(query) {
     const meta = {
       removed: 0,
     }
-    // get full content
-    return this.find().then((content) => {
+    // get all documents
+    return this.find().then((documents) => {
       const Query = new Mingo.Query(query)
-      const remain = Query.remove(content)
-      const removed = content.length - remain.length
+      const remain = Query.remove(documents)
+      const removed = documents.length - remain.length
       meta.removed = removed
       return this._writeFileContent(remain).then(() => meta)
     })
   }
-  update(query, data) {
+  update(query, update) {
     const meta = {
       updated: 0,
     }
-    const safeData = { ...updateModifiedTime(data) }
+    const safeData = { ...updateModifiedTime(update) }
     // protect _id from overriding by user
     if (safeData._id) delete safeData._id
 
-    // get full content
+    // get all documents
     return this.find().then((content) => {
       if (!content.length) return meta
 

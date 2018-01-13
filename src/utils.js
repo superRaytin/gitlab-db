@@ -1,25 +1,25 @@
 import uuidv1 from 'uuid/v1'
 
-export function newId() {
+export function createNewId() {
   return uuidv1().replace(/-/g, '')
 }
 
-export function newRecord(data) {
+export function createNewDocument(data) {
   return {
     ...data,
-    _id: newId(),
-    createdTime: Date.now(),
+    _id: createNewId(),
+    _createdTime: Date.now(),
   }
 }
 
-export function newCollection(collection) {
-  return collection.map(item => newRecord(item))
+export function createNewCollection(collection) {
+  return collection.map(item => createNewDocument(item))
 }
 
 export function updateModifiedTime(data) {
   return {
     ...data,
-    modifiedTime: Date.now(),
+    _modifiedTime: Date.now(),
   }
 }
 
