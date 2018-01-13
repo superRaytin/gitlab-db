@@ -46,6 +46,12 @@ Repository structure will be:
 
 ## API
 
+Note: As all APIs returns a promise. I highly recommend the `yield` statement like the following:
+
+```js
+const result = yield db.collection('product').save({ name: 'iphone', v: '8', price: 699 })
+```
+
 ### constructor(dbName, options)
 
 Instantiate a database.
@@ -71,15 +77,27 @@ Connect to a collection.
 
 ### db.collection(collectionName).save(document)
 
-Inserts a new document.
+Inserts a new document. This method will returns the inserted document.
 
 - **document:** `Object` A document to save to the collection.
+
+Returns like:
+
+```js
+{ added: 1, document: {...} }
+```
 
 ### db.collection(collectionName).find([query])
 
 Selects documents in a collection.
 
 - **query:** `Object` Optional. Specifies selection filter using query operators. To return all documents in a collection, omit this parameter or pass an empty document ({}).
+
+Returns like:
+
+```js
+[{ _id: 1, ... }]
+```
 
 ### db.collection(collectionName).update(query, update)
 
@@ -88,17 +106,35 @@ Modifies an existing document or documents in a collection.
 - **query:** `Object` The selection criteria for the update. The same query selectors as in the find() method are available.
 - **update:** `Object` The modifications to apply.
 
+Returns like:
+
+```js
+{ updated: 2 }
+```
+
 ### db.collection(collectionName).remove(query)
 
 Removes documents from a collection.
 
 - **query:** `Object` Specifies deletion criteria using query operators.
 
+Returns like:
+
+```js
+{ removed: 1 }
+```
+
 ### db.isCollectionExists(collectionName)
 
 Check if a collection exists.
 
 - **collectionName:** `String` Name of the collection you want to check.
+
+Returns like:
+
+```js
+true
+```
 
 ### Next
 
