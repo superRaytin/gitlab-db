@@ -15,9 +15,9 @@ const options = {
 }
 const testDbName = 'flame'
 const testCollectionName = 'project'
-const testCollectionContent = [{"a":1,"b":3},{"a":1,"d":3,"b":3},{"a":11,"b":22,"c":33,"d":44}]
+const testCollectionDocuments = [{ a: 1, b: 3 }, { a: 1, d: 3, b: 3 }, { a: 11, b: 22, c: 33, d: 44 }]
 const collectionsWillBeCreatedAndRemoved = ['project4', 'project5']
-const newProject = {
+const newDocument = {
   a: 41,
   b: 42,
 }
@@ -30,7 +30,7 @@ describe('GitLabDB', function() {
     console.log(`Creating ${testDbName}/${testCollectionName}.json file in the test repo: ${options.repo}...`)
     gitlabDB.isCollectionExists(testCollectionName).then((result) => {
       if (!result) {
-        gitlabDB.createCollection(testCollectionName, testCollectionContent).then((data) => {
+        gitlabDB.createCollection(testCollectionName, testCollectionDocuments).then((data) => {
           expect(data).to.have.a.property('file_path')
           done()
         })
@@ -59,11 +59,11 @@ describe('GitLabDB', function() {
   })
 
   it('should save passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).save(newProject)).eventually.to.have.a.property('added').notify(done)
+    expect(gitlabDB.collection(testCollectionName).save(newDocument)).eventually.to.have.a.property('added').notify(done)
   })
 
   it('should remove passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).remove(newProject)).eventually.to.have.a.property('removed').notify(done)
+    expect(gitlabDB.collection(testCollectionName).remove(newDocument)).eventually.to.have.a.property('removed').notify(done)
   })
 
   it('should update passed', (done) => {
