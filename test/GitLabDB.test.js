@@ -17,11 +17,9 @@ const testDbName = 'flame'
 const testCollectionName = 'project'
 const testCollectionDocuments = [{ a: 1, b: 3 }, { a: 1, d: 3, b: 3 }, { a: 11, b: 22, c: 33, d: 44 }]
 const collectionsWillBeCreatedAndRemoved = ['project4', 'project5']
-const newDocument = {
-  a: 41,
-  b: 42,
-}
+const newDocument = { a: 41, b: 42 }
 const gitlabDB = new GitLabDB(testDbName, options)
+const collection = gitlabDB.collection(testCollectionName, { key: 'a' })
 
 describe('GitLabDB', function() {
   this.timeout(200000)
@@ -30,7 +28,7 @@ describe('GitLabDB', function() {
     console.log(`Creating ${testDbName}/${testCollectionName}.json file in the test repo: ${options.repo}...`)
     gitlabDB.isCollectionExists(testCollectionName).then((result) => {
       if (!result) {
-        gitlabDB.createCollection(testCollectionName, testCollectionDocuments, { key: 'a' }).then((data) => {
+        gitlabDB.createCollection(testCollectionName, testCollectionDocuments).then((data) => {
           expect(data).to.have.a.property('file_path')
           done()
         })
@@ -59,15 +57,15 @@ describe('GitLabDB', function() {
   })
 
   it('should save passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).save(newDocument)).eventually.to.have.a.property('added').notify(done)
+    expect(collection.save(newDocument)).eventually.to.have.a.property('added').notify(done)
   })
 
   it('document that the key points to already exists, should save failed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).save(newDocument)).eventually.to.equal(null).notify(done)
+    expect(collection.save(newDocument)).eventually.to.equal(null).notify(done)
   })
 
   it('should remove passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).remove(newDocument)).eventually.to.have.a.property('removed').notify(done)
+    expect(collection.remove(newDocument)).eventually.to.have.a.property('removed').notify(done)
   })
 
   it('should update passed', (done) => {

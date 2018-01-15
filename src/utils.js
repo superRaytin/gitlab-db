@@ -4,7 +4,7 @@ export function createNewId() {
   return uuidv1().replace(/-/g, '')
 }
 
-export function createNewDocument(data) {
+export function initializeDocument(data) {
   return {
     ...data,
     _id: createNewId(),
@@ -12,8 +12,8 @@ export function createNewDocument(data) {
   }
 }
 
-export function createNewCollection(collection) {
-  return collection.map(item => createNewDocument(item))
+export function initializeCollection(collection) {
+  return collection.map(item => initializeDocument(item))
 }
 
 export function updateModifiedTime(data) {
