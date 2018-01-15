@@ -9,6 +9,7 @@ module.exports = class GitLabDB {
     }
     this.dbName = dbName
     this.options = { ...defaultOptions, ...options }
+    this.collectionOptions = {}
     this.gitlabClient = new GitLab({
       url: this.options.url,
       token: this.options.token,
@@ -42,14 +43,24 @@ module.exports = class GitLabDB {
         file_path: `${dbName}/${collectionName}.json`,
         branch_name: branch,
         content: JSON.stringify(content),
-        commit_message: 'update collection',
+        commit_message: 'Update collection',
       }, (data) => {
         resolve(data)
       })
     })
   }
-  createCollection(collectionName, documents = []) {
-    const initialContent = createNewCollection(documents)
+  createCollection(collectionName, documents, options) {
+    const args = arguments
+    let defaultDocuments = []
+    let finalOptions = {}
+    if (args.length === 2) {
+      defaultDocuments = documents
+    } else if (args.length === 3) {
+      defaultDocuments = documents
+      finalOptions = options
+    }
+    this.collectionOptions[collectionName] = finalOptions
+    const initialContent = createNewCollection(defaultDocuments)
     const { dbName } = this
     const { repo, branch } = this.options
     return new Promise((resolve, reject) => {
@@ -58,7 +69,7 @@ module.exports = class GitLabDB {
         file_path: `${dbName}/${collectionName}.json`,
         branch_name: branch,
         content: JSON.stringify(initialContent),
-        commit_message: 'create collection',
+        commit_message: 'Create collection',
       }, (data) => {
         if (data === true) {
           return reject(new Error(`[${collectionName}]: cannot override existing collections, use update instead`))
@@ -76,20 +87,24 @@ module.exports = class GitLabDB {
     return this
   }
   save(document) {
-    const meta = {
-      added: 1,
-    }
+    const { collectionName, collectionOptions } = this
+    const currentCollectionOptions = collectionOptions[collectionName]
+    const meta = { added: 1 }
     // get all documents
     return this.find().then((documents) => {
+      // check if a key is specified
+      const collectionKey = currentCollectionOptions.key
+      if (collectionKey) {
+        const found = documents.find((item) => item[collectionKey] === document[collectionKey])
+        if (found) return null
+      }
       const newDocument = createNewDocument(document)
       documents.push(newDocument)
       return this._writeFileContent(documents).then(() => ({ ...meta, document: newDocument }))
     })
   }
   remove(query) {
-    const meta = {
-      removed: 0,
-    }
+    const meta = { removed: 0 }
     // get all documents
     return this.find().then((documents) => {
       const Query = new Mingo.Query(query)
@@ -100,9 +115,7 @@ module.exports = class GitLabDB {
     })
   }
   update(query, update) {
-    const meta = {
-      updated: 0,
-    }
+    const meta = { updated: 0 }
     const safeData = { ...updateModifiedTime(update) }
     // protect _id from overriding by user
     if (safeData._id) delete safeData._id

@@ -62,12 +62,14 @@ Instantiate a database.
   - **token:** `String` Specify your personal access token.
   - **repo:** `String` Specify repository name and group belongs to, format: `group/repo`.
 
-### db.createCollection(collectionName [, documents])
+### db.createCollection(collectionName [, documents, options])
 
 Create a collection.
 
 - **collectionName:** `String` Name of the collection you want to create.
 - **documents:** `Array` Optional. Specifies default data of the collection about to be created.
+- **options:** `Object` Optional settings.
+  - **key:** `String` Specify a key of the collection.
 
 ### db.collection(collectionName)
 
@@ -86,6 +88,8 @@ Returns like:
 ```js
 { added: 1, document: {...} }
 ```
+
+Note: it will return `null` if a key is specified and the document that the key points to already exists.
 
 ### db.collection(collectionName).find([query])
 

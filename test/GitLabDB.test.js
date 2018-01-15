@@ -30,7 +30,7 @@ describe('GitLabDB', function() {
     console.log(`Creating ${testDbName}/${testCollectionName}.json file in the test repo: ${options.repo}...`)
     gitlabDB.isCollectionExists(testCollectionName).then((result) => {
       if (!result) {
-        gitlabDB.createCollection(testCollectionName, testCollectionDocuments).then((data) => {
+        gitlabDB.createCollection(testCollectionName, testCollectionDocuments, { key: 'a' }).then((data) => {
           expect(data).to.have.a.property('file_path')
           done()
         })
@@ -47,8 +47,8 @@ describe('GitLabDB', function() {
     done()
   })
 
-  it('should create collection failed', (done) => {
-    gitlabDB.createCollection(testCollectionName).catch((e) => {
+  it('collection already exists, should createCollection failed', (done) => {
+    gitlabDB.createCollection(testCollectionName, [], { key: 'a' }).catch((e) => {
       expect(e).to.be.an('error')
       done()
     })
@@ -60,6 +60,10 @@ describe('GitLabDB', function() {
 
   it('should save passed', (done) => {
     expect(gitlabDB.collection(testCollectionName).save(newDocument)).eventually.to.have.a.property('added').notify(done)
+  })
+
+  it('document that the key points to already exists, should save failed', (done) => {
+    expect(gitlabDB.collection(testCollectionName).save(newDocument)).eventually.to.equal(null).notify(done)
   })
 
   it('should remove passed', (done) => {
