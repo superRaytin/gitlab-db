@@ -62,20 +62,20 @@ Instantiate a database.
   - **token:** `String` Specify your personal access token.
   - **repo:** `String` Specify repository name and group belongs to, format: `group/repo`.
 
-### db.createCollection(collectionName [, documents, options])
+### db.createCollection(collectionName [, documents])
 
 Create a collection.
 
 - **collectionName:** `String` Name of the collection you want to create.
 - **documents:** `Array` Optional. Specifies default data of the collection about to be created.
-- **options:** `Object` Optional settings.
-  - **key:** `String` Specify a key of the collection.
 
-### db.collection(collectionName)
+### db.collection(collectionName [, options])
 
 Connect to a collection.
 
 - **collectionName:** `String` Name of the collection you want to connect.
+- **options:** `Object` Optional settings.
+  - **key:** `String` Specify a key of the collection.
 
 ### db.collection(collectionName).save(document)
 
