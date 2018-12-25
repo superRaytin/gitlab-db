@@ -44,20 +44,31 @@ export default class Collection {
   setOptions(options) {
     this.options = { ...this.options || {}, options }
   }
-  save(document) {
+  save(doc) {
     const { options } = this
-    const meta = { added: 1 }
+    const isBatchMode = Object.prototype.toString.call(doc) === '[object Array]'
     // get all documents
     return this.find().then((documents) => {
+      let willBeInserted = isBatchMode ? doc : [doc]
       // check if a key is specified
       const collectionKey = options.key
       if (collectionKey) {
-        const found = documents.find((item) => item[collectionKey] === document[collectionKey])
-        if (found) return null
+        willBeInserted = willBeInserted.filter((item) => {
+          const found = documents.find((originalItem) => originalItem[collectionKey] === item[collectionKey])
+          return !found
+        })
       }
-      const newDocument = initializeDocument(document)
-      documents.push(newDocument)
-      return this._writeFileContent(documents).then(() => ({ ...meta, document: newDocument }))
+      willBeInserted = willBeInserted.map(item => initializeDocument(item))
+
+      const newContent = documents.concat(willBeInserted)
+      const result = { added: willBeInserted.length }
+      if (result.added === 1) {
+        result.document = willBeInserted[0]
+      } else if (result.added > 1) {
+        result.documents = willBeInserted
+      }
+
+      return this._writeFileContent(newContent).then(() => result)
     })
   }
   remove(query) {

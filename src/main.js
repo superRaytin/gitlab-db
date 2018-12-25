@@ -61,7 +61,7 @@ class GitLabDB {
         file_path: `${dbName}/${collectionName}.json`,
         ref: branch,
       }, (data) => {
-        if (data) {
+        if (data && data.file_name) {
           resolve(true)
         } else {
           resolve(false)
