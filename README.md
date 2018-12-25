@@ -79,17 +79,26 @@ Connect to a collection.
 
 ### db.collection(collectionName).save(document)
 
-Inserts a new document. This method will returns the inserted document.
+Inserts a new document(or multiple documents). This method will returns the inserted document(s).
 
 - **document:** `Object` A document to save to the collection.
+- **document:** `Array` Multiple documents to save to the collection.
 
 Returns like:
+
+> Insert single document:
 
 ```js
 { added: 1, document: {...} }
 ```
 
-Note: it will return `null` if a key is specified and the document that the key points to already exists.
+> Insert multiple documents:
+
+```js
+{ added: 2, documents: [{...}, {...}] }
+```
+
+Note: it will return `{ added: 0 }` if a key is specified and the document that the key points to already exists.
 
 ### db.collection(collectionName).find([query])
 

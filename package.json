@@ -1,6 +1,6 @@
 {
   "name": "gitlab-db",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "description": "A lightweight GitLab based JSON database with Mongo-style API",
   "repository": {
     "type": "git",

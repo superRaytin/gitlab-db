@@ -6,6 +6,10 @@ import GitLabDB from '../dist/main'
 
 chai.use(chaiAsPromised)
 
+if(!process.env.GITLAB_URL || !process.env.ACCESS_TOKEN || !process.env.REPO) {
+  throw new Error('you should define environments (GITLAB_URL, ACCESS_TOKEN, REPO) before running tests')
+}
+
 const expect = chai.expect
 const should = chai.should()
 const options = {
@@ -14,10 +18,11 @@ const options = {
   repo: process.env.REPO,
 }
 const testDbName = 'flame'
-const testCollectionName = 'project'
-const testCollectionDocuments = [{ a: 1, b: 3 }, { a: 1, d: 3, b: 3 }, { a: 11, b: 22, c: 33, d: 44 }]
+const testCollectionName = 'project1'
+const testCollectionDocuments = [{ a: 1, b: 3 }, { a: 2, d: 3, b: 3 }, { a: 11, b: 22, c: 33, d: 44 }]
 const collectionsWillBeCreatedAndRemoved = ['project4', 'project5']
 const newDocument = { a: 41, b: 42 }
+const newDocuments = [{ a: 41, b: 42 }, { a: 51, b: 52 }, { a: 53, b: 54 }]
 const gitlabDB = new GitLabDB(testDbName, options)
 const collection = gitlabDB.collection(testCollectionName, { key: 'a' })
 
@@ -38,13 +43,6 @@ describe('GitLabDB', function() {
     })
   })
 
-  beforeEach((done) => {
-    if(!process.env.GITLAB_URL || !process.env.ACCESS_TOKEN || !process.env.REPO) {
-      console.warn('you should define environments (GITLAB_URL, ACCESS_TOKEN, REPO) before running tests')
-    }
-    done()
-  })
-
   it('collection already exists, should createCollection failed', (done) => {
     gitlabDB.createCollection(testCollectionName, [], { key: 'a' }).catch((e) => {
       expect(e).to.be.an('error')
@@ -60,8 +58,12 @@ describe('GitLabDB', function() {
     expect(collection.save(newDocument)).eventually.to.have.a.property('added').notify(done)
   })
 
+  it('should batch saving passed', (done) => {
+    expect(collection.save(newDocuments)).eventually.to.have.property('added', 2).notify(done)
+  })
+
   it('document that the key points to already exists, should save failed', (done) => {
-    expect(collection.save(newDocument)).eventually.to.equal(null).notify(done)
+    expect(collection.save(newDocument)).eventually.to.eql({ added: 0 }).notify(done)
   })
 
   it('should remove passed', (done) => {
