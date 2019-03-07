@@ -81,8 +81,7 @@ Connect to a collection.
 
 Inserts a new document(or multiple documents). This method will returns the inserted document(s).
 
-- **document:** `Object` A document to save to the collection.
-- **document:** `Array` Multiple documents to save to the collection.
+- **document:** `Object` | `Array` A document or multiple documents to save to the collection.
 
 Returns like:
 
@@ -125,6 +124,15 @@ Returns like:
 { updated: 2 }
 ```
 
+Another usage, execute multiple updates at once to reduce gitlab requests:
+
+```js
+db.collection(collectionName).update([
+    { query: { id: 1 }, update: { v: 1 } },
+    { query: { id: 2 }, update: { v: 2 } },
+])
+```
+
 ### db.collection(collectionName).remove(query)
 
 Removes documents from a collection.
@@ -151,7 +159,6 @@ true
 
 ### Next
 
-- [ ] multi save
 - [ ] model check
 - [ ] collection deletion
 

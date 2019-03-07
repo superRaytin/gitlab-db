@@ -24,7 +24,6 @@ const collectionsWillBeCreatedAndRemoved = ['project4', 'project5']
 const newDocument = { a: 41, b: 42 }
 const newDocuments = [{ a: 41, b: 42 }, { a: 51, b: 52 }, { a: 53, b: 54 }]
 const gitlabDB = new GitLabDB(testDbName, options)
-const collection = gitlabDB.collection(testCollectionName, { key: 'a' })
 
 describe('GitLabDB', function() {
   this.timeout(200000)
@@ -55,31 +54,40 @@ describe('GitLabDB', function() {
   })
 
   it('should save passed', (done) => {
-    expect(collection.save(newDocument)).eventually.to.have.a.property('added').notify(done)
+    expect(gitlabDB.collection('project4').save(newDocument)).eventually.to.have.a.property('added', 1).notify(done)
   })
 
   it('should batch saving passed', (done) => {
-    expect(collection.save(newDocuments)).eventually.to.have.property('added', 2).notify(done)
+    expect(gitlabDB.collection('project4', { key: 'a' }).save(newDocuments)).eventually.to.have.a.property('added', 2).notify(done)
   })
 
-  it('document that the key points to already exists, should save failed', (done) => {
-    expect(collection.save(newDocument)).eventually.to.eql({ added: 0 }).notify(done)
+  it('should return {added: 0} while saving a document that the key points to already exists', (done) => {
+    expect(gitlabDB.collection('project4', { key: 'a' }).save(newDocument)).eventually.to.eql({ added: 0 }).notify(done)
   })
 
   it('should remove passed', (done) => {
-    expect(collection.remove(newDocument)).eventually.to.have.a.property('removed').notify(done)
+    expect(gitlabDB.collection('project4').remove(newDocument)).eventually.to.have.a.property('removed').notify(done)
+  })
+
+  it('should return {updated: 0} while updating a non-existent document', (done) => {
+    expect(gitlabDB.collection('project4').update({a: 9999}, {d: 44})).eventually.to.eql({ updated: 0 }).notify(done)
   })
 
   it('should update passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).update({a: 11}, {d: 44})).eventually.to.have.a.property('updated').notify(done)
+    expect(gitlabDB.collection('project4').update({a: 51}, {d: 44})).eventually.to.eql({ updated: 1 }).notify(done)
+  })
+
+  it('should batch update passed', (done) => {
+    const updates = [{ query: {a: 51}, update: {d: 45} }, { query: {a: 53}, update: {d: 54} }]
+    expect(gitlabDB.collection('project4').update(updates)).eventually.to.eql({ updated: 2 }).notify(done)
   })
 
   it('should find passed', (done) => {
-    expect(gitlabDB.collection(testCollectionName).find({a: 1})).eventually.to.be.an('array').notify(done)
+    expect(gitlabDB.collection('project4').find({a: 1})).eventually.to.be.an('array').notify(done)
   })
 
   it('should isCollectionExists passed', (done) => {
-    expect(gitlabDB.isCollectionExists(testCollectionName)).eventually.to.equal(true).notify(done)
+    expect(gitlabDB.isCollectionExists('project4')).eventually.to.equal(true).notify(done)
   })
 
   after((done) => {

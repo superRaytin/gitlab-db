@@ -41,8 +41,8 @@ export default class Collection {
       })
     })
   }
-  setOptions(options) {
-    this.options = { ...this.options || {}, options }
+  setOptions(options = {}) {
+    this.options = { ...this.options, ...options }
   }
   save(doc) {
     const { options } = this
@@ -83,30 +83,41 @@ export default class Collection {
     })
   }
   update(query, update) {
+    const isBatchMode = arguments.length === 1 && Object.prototype.toString.call(query) === '[object Array]'
     const meta = { updated: 0 }
-    const safeData = { ...updateModifiedTime(update) }
-    // protect _id from overriding by user
-    if (safeData._id) delete safeData._id
+
+    let updates = isBatchMode ? query : [{ query, update }]
 
     // get all documents
     return this.find().then((content) => {
       if (!content.length) return meta
 
-      // find elements which should be updated
-      const Query = new Mingo.Query(query)
-      const cursor = Query.find(content)
-      const willBeUpdate = cursor.all()
+      let result = content
 
-      // update elements, it will be inserted to result
-      const updated = willBeUpdate.map((item) => ({ ...item, ...safeData }))
+      updates.forEach((item) => {
+        const { query, update } = item
 
-      // remove elements which should be updated
-      const remain = Query.remove(content)
+        // find elements which should be updated
+        const Query = new Mingo.Query(query)
+        const cursor = Query.find(result)
+        const willBeUpdate = cursor.all()
 
-      // insert the updated elements to result
-      const result = remain.concat(updated)
+        const safeData = { ...updateModifiedTime(update) }
+        // protect _id from overriding by user
+        if (safeData._id) delete safeData._id
 
-      meta.updated = content.length
+        // updated elements, it will be inserted to result
+        const updated = willBeUpdate.map((item) => ({ ...item, ...safeData }))
+
+        // removes elements which should be updated
+        const remain = Query.remove(content)
+
+        // inserts the updated elements to result
+        result = updated.concat(remain)
+
+        meta.updated += updated.length
+      })
+
       return this._writeFileContent(result).then(() => meta)
     })
   }
