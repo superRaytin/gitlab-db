@@ -62,7 +62,7 @@ Instantiate a database.
   - **token:** `String` Specify your personal access token.
   - **repo:** `String` Specify repository name and group belongs to, format: `group/repo`.
   - **branch:** `String` Optional, specify branch, default: `main`.
-- **customGitlabAPI:** `String` Specify your custom GitlabAPI like `@gitbeaker/browser`.
+- **customGitlabAPI:** `Constructor` Specify your custom GitlabAPI like `@gitbeaker/browser`.
 
 ### db.createCollection(collectionName [, documents])
 
