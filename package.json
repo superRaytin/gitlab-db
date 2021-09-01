@@ -1,6 +1,6 @@
 {
   "name": "gitlab-db",
-  "version": "0.5.0",
+  "version": "1.0.0",
   "description": "A lightweight GitLab based JSON database with Mongo-style API",
   "repository": {
     "type": "git",
@@ -10,33 +10,34 @@
   "scripts": {
     "lint": "eslint --ext .js src",
     "build": "babel src --out-dir dist",
-    "test": "npm run build && node ./node_modules/mocha-webpack/bin/mocha-webpack --webpack-config webpack.test.config.js \"test/*.test.js\"",
-    "publishOnly": "npm run build && npm publish"
+    "test": "npm run build && node ./node_modules/mochapack/bin/mochapack --webpack-config webpack.test.config.js \"test/*.test.js\"",
+    "prepublishOnly": "npm run lint && npm run build",
+    "postpublish": "PACKAGE_VERSION=$(cat package.json | grep \\\"version\\\" | head -1 | awk -F: '{ print $2 }' | sed 's/[\",]//g' | tr -d '[[:space:]]') && git tag $PACKAGE_VERSION && git push --tags"
   },
   "dependencies": {
-    "gitlab": "^1.7.1",
-    "mingo": "^2.1.1",
-    "uuid": "^3.1.0"
+    "@gitbeaker/node": "^33.0.0",
+    "mingo": "^4.1.4",
+    "uuid": "^8.3.2"
   },
   "devDependencies": {
-    "assert": "^1.4.1",
-    "babel-cli": "^6.26.0",
-    "babel-loader": "^7.0.0",
-    "babel-core": "^6.26.0",
-    "babel-eslint": "^8.0.1",
-    "babel-plugin-transform-class-properties": "^6.24.1",
-    "babel-plugin-transform-es2015-classes": "^6.24.1",
-    "babel-plugin-transform-object-rest-spread": "^6.26.0",
-    "babel-preset-env": "^1.6.0",
-    "chai": "^4.0.0",
+    "@babel/core": "^7.15.0",
+    "@babel/cli": "^7.14.8",
+    "@babel/plugin-proposal-object-rest-spread": "^7.14.7",
+    "@babel/plugin-transform-classes": "^7.14.9",
+    "@babel/plugin-proposal-class-properties": "^7.14.5",
+    "assert": "^2.0.0",
+    "babel-loader": "^8.2.2",
+    "babel-eslint": "^10.1.0",
+    "babel-preset-env": "^1.7.0",
+    "chai": "^4.3.4",
     "chai-as-promised": "^7.1.1",
-    "eslint": "^4.7.2",
-    "eslint-config-airbnb-base": "^12.0.0",
-    "eslint-plugin-import": "^2.7.0",
-    "eslint-plugin-node": "^5.1.1",
-    "mocha": "^4.1.0",
-    "mocha-webpack": "^1.0.1",
-    "webpack": "^2.6.1",
-    "webpack-node-externals": "^1.6.0"
+    "eslint": "^7.32.0",
+    "eslint-config-airbnb-base": "^14.2.1",
+    "eslint-plugin-import": "^2.24.2",
+    "eslint-plugin-node": "^11.1.0",
+    "mocha": "8",
+    "mochapack": "^2.1.2",
+    "webpack": "^5.51.1",
+    "webpack-node-externals": "^3.0.0"
   }
 }

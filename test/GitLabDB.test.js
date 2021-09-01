@@ -18,7 +18,7 @@ const options = {
   repo: process.env.REPO,
 }
 const testDbName = 'flame'
-const testCollectionName = 'project1'
+const testCollectionName = 'project'
 const testCollectionDocuments = [{ a: 1, b: 3 }, { a: 2, d: 3, b: 3 }, { a: 11, b: 22, c: 33, d: 44 }]
 const collectionsWillBeCreatedAndRemoved = ['project4', 'project5']
 const newDocument = { a: 41, b: 42 }
@@ -28,24 +28,18 @@ const gitlabDB = new GitLabDB(testDbName, options)
 describe('GitLabDB', function() {
   this.timeout(200000)
 
-  before((done) => {
+  before(async () => {
     console.log(`Creating ${testDbName}/${testCollectionName}.json file in the test repo: ${options.repo}...`)
-    gitlabDB.isCollectionExists(testCollectionName).then((result) => {
-      if (!result) {
-        gitlabDB.createCollection(testCollectionName, testCollectionDocuments).then((data) => {
-          expect(data).to.have.a.property('file_path')
-          done()
-        })
-      } else {
-        done()
-      }
-    })
+    const isExists = await gitlabDB.isCollectionExists(testCollectionName)
+    if (!isExists) {
+      const data = await gitlabDB.createCollection(testCollectionName, testCollectionDocuments)
+      expect(data).to.have.a.property('file_path')
+    }
   })
 
-  it('collection already exists, should createCollection failed', (done) => {
-    gitlabDB.createCollection(testCollectionName, [], { key: 'a' }).catch((e) => {
+  it('collection already exists, should createCollection failed', () => {
+    return gitlabDB.createCollection(testCollectionName, [], { key: 'a' }).catch((e) => {
       expect(e).to.be.an('error')
-      done()
     })
   })
 
@@ -92,10 +86,8 @@ describe('GitLabDB', function() {
 
   after((done) => {
     console.log('Get all tests be done, cleaning generated files...')
-    cleanRepositry(collectionsWillBeCreatedAndRemoved, { ...options, dbName: testDbName }).then((data) => {
-      const removed_files = data.map(item => {
-        return JSON.parse(item).file_path
-      }).join(', ')
+    cleanRepositry(collectionsWillBeCreatedAndRemoved, { ...options, dbName: testDbName }).then(() => {
+      const removed_files = collectionsWillBeCreatedAndRemoved.map(item => `${testDbName}/${item}`).join(', ')
       console.log(`${removed_files} has been removed`)
       done()
     })

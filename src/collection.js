@@ -10,36 +10,36 @@ export default class Collection {
   _getFileContent() {
     const { name } = this
     const { client, dbName, repo, branch } = this.gitlabConfig
-    return new Promise((resolve, reject) => {
-      client.projects.repository.showFile(repo, {
-        file_path: `${dbName}/${name}.json`,
-        ref: branch,
-      }, (data) => {
-        if (!data) return reject(new Error(`[${name}]: collection does not exist`))
-        const content = Buffer.from(data.content, 'base64').toString()
-        try {
-          const result = JSON.parse(content)
-          resolve(result)
-        } catch (e) {
-          reject(new Error(`[${name}]: collection content must be a valid JSON object`))
-        }
-      })
+    const projectId = repo
+    const file_path = `${dbName}/${name}.json`
+    const branch_name = branch
+
+    return client.RepositoryFiles.show(projectId, file_path, branch_name).then((data) => {
+      if (!data) throw new Error(`[${name}]: collection does not exist`)
+      const content = Buffer.from(data.content, 'base64').toString()
+      try {
+        const result = JSON.parse(content)
+        return result
+      } catch (e) {
+        throw new Error(`[${name}]: collection content must be a valid JSON object`)
+      }
     })
   }
   _writeFileContent(content) {
     const { name } = this
     const { client, dbName, repo, branch } = this.gitlabConfig
-    return new Promise((resolve) => {
-      client.projects.repository.updateFile({
-        projectId: repo,
-        file_path: `${dbName}/${name}.json`,
-        branch_name: branch,
-        content: JSON.stringify(content),
-        commit_message: 'Update collection',
-      }, (data) => {
-        resolve(data)
-      })
-    })
+    const projectId = repo
+    const file_path = `${dbName}/${name}.json`
+    const branch_name = branch
+    const stringifiedContent = JSON.stringify(content)
+    const commit_message = 'Update collection'
+    return client.RepositoryFiles.edit(
+      projectId,
+      file_path,
+      branch_name,
+      stringifiedContent,
+      commit_message,
+    )
   }
   setOptions(options = {}) {
     this.options = { ...this.options, ...options }

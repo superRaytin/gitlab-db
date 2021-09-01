@@ -1,37 +1,38 @@
-import GitLab from 'gitlab'
+import { Gitlab } from '@gitbeaker/node'
 import { initializeCollection, promiseAllSerial } from './utils'
 import Collection from './collection'
 
 class GitLabDB {
-  constructor(dbName, options = {}) {
+  constructor(dbName, options = {}, customGitlabAPI) {
     const defaultOptions = {
-      branch: 'master',
+      branch: 'main',
     }
+    const GitlabClient = customGitlabAPI || Gitlab
     this.dbName = dbName
     this.options = { ...defaultOptions, ...options }
-    this.gitlabClient = new GitLab({
-      url: this.options.url,
+    this.collections = {}
+    this.gitlabClient = new GitlabClient({
+      host: this.options.url,
       token: this.options.token,
     })
-    this.collections = {}
   }
   createCollection(collectionName, documents = []) {
     const initialContent = initializeCollection(documents)
     const { dbName } = this
     const { repo, branch } = this.options
-    return new Promise((resolve, reject) => {
-      this.gitlabClient.projects.repository.createFile({
-        projectId: repo,
-        file_path: `${dbName}/${collectionName}.json`,
-        branch_name: branch,
-        content: JSON.stringify(initialContent),
-        commit_message: 'Create collection',
-      }, (data) => {
-        if (data === true) {
-          return reject(new Error(`[${collectionName}]: cannot override existing collections, use update instead`))
-        }
-        resolve(data)
-      })
+    const projectId = repo
+    const file_path = `${dbName}/${collectionName}.json`
+    const branch_name = branch
+    const content = JSON.stringify(initialContent)
+    const commit_message = 'Create collection'
+    return this.gitlabClient.RepositoryFiles.create(
+      projectId,
+      file_path,
+      branch_name,
+      content,
+      commit_message,
+    ).catch(() => {
+      throw new Error(`[${collectionName}]: cannot override existing collections, use update instead`)
     })
   }
   createCollections(collectionNames, documentsArray = []) {
@@ -56,17 +57,13 @@ class GitLabDB {
   isCollectionExists(collectionName) {
     const { dbName } = this
     const { repo, branch } = this.options
-    return new Promise((resolve) => {
-      this.gitlabClient.projects.repository.showFile(repo, {
-        file_path: `${dbName}/${collectionName}.json`,
-        ref: branch,
-      }, (data) => {
-        if (data && data.file_name) {
-          resolve(true)
-        } else {
-          resolve(false)
-        }
-      })
+    const projectId = repo
+    const file_path = `${dbName}/${collectionName}.json`
+    const branch_name = branch
+    return this.gitlabClient.RepositoryFiles.show(projectId, file_path, branch_name).then((res) => {
+      return !!(res && res.file_name)
+    }).catch((e) => {
+      return false
     })
   }
 }

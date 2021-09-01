@@ -1,5 +1,5 @@
 # gitlab-db
-A lightweight GitLab based JSON database with Mongo-style API. Backed by [node-gitlab](https://github.com/node-gitlab/node-gitlab) and [mingo](https://github.com/kofrasa/mingo).
+A lightweight Gitlab based JSON database with Mongo-style API. Backed by [gitbreaker](https://github.com/jdalrymple/gitbeaker) and [mingo](https://github.com/kofrasa/mingo).
 
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][npm-url]
@@ -17,10 +17,10 @@ npm i gitlab-db
 ## Quick Start
 
 ```js
-import GitLabDB from 'gitlab-db'
+import GitlabDB from 'gitlab-db'
 
 // Instantiate a database
-const db = new GitLabDB('apple', {
+const db = new GitlabDB('apple', {
   url: 'http://gitlab.example.com',
   token: 'your_access_token',
   repo: 'group/repo',
@@ -46,13 +46,13 @@ Repository structure will be:
 
 ## API
 
-Note: As all APIs returns a promise. I highly recommend the `yield` statement like the following:
+Note: As all APIs returns a promise. I highly recommend the `async/await` statement like the following:
 
 ```js
-const result = yield db.collection('product').save({ name: 'iphone', v: '8', price: 699 })
+const result = await db.collection('product').save({ name: 'iphone', v: '8', price: 699 })
 ```
 
-### constructor(dbName, options)
+### constructor(dbName, options[, customGitlabAPI])
 
 Instantiate a database.
 
@@ -61,6 +61,8 @@ Instantiate a database.
   - **url:** `String` Specify gitlab url, eg: `http://gitlab.example.com`.
   - **token:** `String` Specify your personal access token.
   - **repo:** `String` Specify repository name and group belongs to, format: `group/repo`.
+  - **branch:** `String` Optional, specify branch, default: `main`.
+- **customGitlabAPI:** `String` Specify your custom GitlabAPI like `@gitbeaker/browser`.
 
 ### db.createCollection(collectionName [, documents])
 
@@ -157,12 +159,28 @@ Returns like:
 true
 ```
 
-### Next
+## Use in Browser
+
+```js
+import { Gitlab } from '@gitbeaker/browser'; 
+import GitlabDB from 'gitlab-db'
+
+// Instantiate a database
+const db = new GitlabDB('apple', {
+  url: 'http://gitlab.example.com',
+  token: 'your_access_token',
+  repo: 'group/repo',
+}, Gitlab)
+
+// ETC...
+```
+
+## Next
 
 - [ ] model check
 - [ ] collection deletion
 
-### Test
+## Test
 
 Config your environment variables `GITLAB_URL` `ACCESS_TOKEN` `REPO`, and run tests with:
 

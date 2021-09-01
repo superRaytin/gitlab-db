@@ -4,11 +4,10 @@ const child_process = require('child_process')
 export default function cleanRepositry(collectionNames, options) {
   const { token, url, repo, dbName } = options
   const promises = collectionNames.map((collectionName, index) => () => {
-    return new Promise((resolve, reject) => {
-      child_process.exec(`curl --request DELETE --header "PRIVATE-TOKEN: ${token}" "${url}/api/v3/projects/${encodeURIComponent(repo)}/repository/files?file_path=${dbName}%2F${collectionName}%2Ejson&branch_name=master&commit_message=Delete%20collection"`, (error, stdout) => {
+    return new Promise((resolve) => {
+      child_process.exec(`curl --request DELETE --header 'PRIVATE-TOKEN: ${token}' --header "Content-Type: application/json" --data '{"branch": "main", "author_email": "shiliang@dxy.cn", "author_name": "shiliang", "commit_message": "Delete collection"}' "${url}/api/v4/projects/shiliang%2Fgitlab-db/repository/files/${dbName}%2F${collectionName}%2Ejson"`, (error, stdout) => {
         if(error) {
-          console.error('error: ' + error);
-          return reject(error)
+          console.log(`[${collectionName}] error: ` + error);
         }
         resolve(stdout)
       });

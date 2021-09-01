@@ -1,13 +1,14 @@
 var nodeExternals = require('webpack-node-externals')
 
 module.exports = {
+  mode: 'production',
   target: 'node',
   externals: [nodeExternals()],
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.js$/,
-        loader: 'babel-loader'
+        use: 'babel-loader'
       }
     ]
   }
