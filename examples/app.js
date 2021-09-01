@@ -17,20 +17,20 @@ export default class Example {
       repo: config.gitlab.repo,
     })
   }
-  * initializeCollection(collectionName, options) {
-    const isExists = yield this.db.isCollectionExists(collectionName)
+  async initializeCollection(collectionName, options) {
+    const isExists = await this.db.isCollectionExists(collectionName)
     const defaultDocuments = []
     if (!isExists) {
-      yield this.db.createCollection(collectionName, defaultDocuments)
+      await this.db.createCollection(collectionName, defaultDocuments)
     }
     return this.db.collection(collectionName, options)
   }
-  * getCollection() {
-    return yield this.initializeCollection('product', { key: 'name' })
+  async getCollection() {
+    return await this.initializeCollection('product', { key: 'name' })
   }
-  * create(document) {
-    const collection = yield this.getCollection()
-    const newDocument = yield collection.save(document)
+  async create(document) {
+    const collection = await this.getCollection()
+    const newDocument = await collection.save(document)
     if (newDocument === null) {
       console.log('collection already exists!')
     } else {
