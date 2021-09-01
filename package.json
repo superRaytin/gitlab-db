@@ -9,6 +9,7 @@
   "main": "dist/main.js",
   "scripts": {
     "lint": "eslint --ext .js src",
+    "lint:fix": "eslint --fix --ext .js src",
     "build": "babel src --out-dir dist",
     "test": "npm run build && node ./node_modules/mochapack/bin/mochapack --webpack-config webpack.test.config.js \"test/*.test.js\"",
     "prepublishOnly": "npm run lint && npm run build",

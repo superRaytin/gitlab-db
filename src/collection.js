@@ -7,6 +7,7 @@ export default class Collection {
     this.gitlabConfig = gitlabConfig
     this.options = options
   }
+
   _getFileContent() {
     const { name } = this
     const { client, dbName, repo, branch } = this.gitlabConfig
@@ -25,6 +26,7 @@ export default class Collection {
       }
     })
   }
+
   _writeFileContent(content) {
     const { name } = this
     const { client, dbName, repo, branch } = this.gitlabConfig
@@ -41,9 +43,11 @@ export default class Collection {
       commit_message,
     )
   }
+
   setOptions(options = {}) {
     this.options = { ...this.options, ...options }
   }
+
   save(doc) {
     const { options } = this
     const isBatchMode = Object.prototype.toString.call(doc) === '[object Array]'
@@ -71,6 +75,7 @@ export default class Collection {
       return this._writeFileContent(newContent).then(() => result)
     })
   }
+
   remove(query) {
     const meta = { removed: 0 }
     // get all documents
@@ -82,11 +87,11 @@ export default class Collection {
       return this._writeFileContent(remain).then(() => meta)
     })
   }
+
   update(query, update) {
     const isBatchMode = arguments.length === 1 && Object.prototype.toString.call(query) === '[object Array]'
     const meta = { updated: 0 }
-
-    let updates = isBatchMode ? query : [{ query, update }]
+    const updates = isBatchMode ? query : [{ query, update }]
 
     // get all documents
     return this.find().then((content) => {
@@ -95,19 +100,19 @@ export default class Collection {
       let result = content
 
       updates.forEach((item) => {
-        const { query, update } = item
+        const { query: itemQuery, update: itemUpdate } = item
 
         // find elements which should be updated
-        const Query = new Mingo.Query(query)
+        const Query = new Mingo.Query(itemQuery)
         const cursor = Query.find(result)
         const willBeUpdate = cursor.all()
 
-        const safeData = { ...updateModifiedTime(update) }
+        const safeData = { ...updateModifiedTime(itemUpdate) }
         // protect _id from overriding by user
         if (safeData._id) delete safeData._id
 
         // updated elements, it will be inserted to result
-        const updated = willBeUpdate.map((item) => ({ ...item, ...safeData }))
+        const updated = willBeUpdate.map((i) => ({ ...i, ...safeData }))
 
         // removes elements which should be updated
         const remain = Query.remove(content)
@@ -121,6 +126,7 @@ export default class Collection {
       return this._writeFileContent(result).then(() => meta)
     })
   }
+
   find(query = {}) {
     const Query = new Mingo.Query(query)
     return this._getFileContent().then((content) => {

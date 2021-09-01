@@ -16,6 +16,7 @@ class GitLabDB {
       token: this.options.token,
     })
   }
+
   createCollection(collectionName, documents = []) {
     const initialContent = initializeCollection(documents)
     const { dbName } = this
@@ -35,36 +36,34 @@ class GitLabDB {
       throw new Error(`[${collectionName}]: cannot override existing collections, use update instead`)
     })
   }
+
   createCollections(collectionNames, documentsArray = []) {
     const promises = collectionNames.map((collectionName, index) => () => this.createCollection(collectionName, documentsArray[index]))
     return promiseAllSerial(promises)
   }
+
   collection(collectionName, options) {
     const collection = this.collections[collectionName]
     if (collection) {
       collection.setOptions(options)
       return collection
-    } else {
-      this.collections[collectionName] = new Collection(collectionName, {
-        client: this.gitlabClient,
-        dbName: this.dbName,
-        repo: this.options.repo,
-        branch: this.options.branch,
-      }, options)
-      return this.collections[collectionName]
     }
+    this.collections[collectionName] = new Collection(collectionName, {
+      client: this.gitlabClient,
+      dbName: this.dbName,
+      repo: this.options.repo,
+      branch: this.options.branch,
+    }, options)
+    return this.collections[collectionName]
   }
+
   isCollectionExists(collectionName) {
     const { dbName } = this
     const { repo, branch } = this.options
     const projectId = repo
     const file_path = `${dbName}/${collectionName}.json`
     const branch_name = branch
-    return this.gitlabClient.RepositoryFiles.show(projectId, file_path, branch_name).then((res) => {
-      return !!(res && res.file_name)
-    }).catch((e) => {
-      return false
-    })
+    return this.gitlabClient.RepositoryFiles.show(projectId, file_path, branch_name).then((res) => !!(res && res.file_name)).catch(() => false)
   }
 }
 
