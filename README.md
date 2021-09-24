@@ -1,5 +1,5 @@
 # gitlab-db
-A lightweight Gitlab based JSON database with Mongo-style API. Backed by [gitbreaker](https://github.com/jdalrymple/gitbeaker) and [mingo](https://github.com/kofrasa/mingo).
+A lightweight Gitlab based JSON database with Mongo-style API. Backed by [gitbeaker](https://github.com/jdalrymple/gitbeaker) and [mingo](https://github.com/kofrasa/mingo).
 
 [![NPM version][npm-image]][npm-url]
 [![Downloads][downloads-image]][npm-url]
