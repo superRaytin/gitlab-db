@@ -32,8 +32,12 @@ class GitLabDB {
       branch_name,
       content,
       commit_message,
-    ).catch(() => {
-      throw new Error(`[${collectionName}]: cannot override existing collections, use update instead`)
+    ).catch((error) => {
+      throw new Error(
+        `failed to create new collection [${collectionName}]${
+          error?.message ? `: ${error.message}` : ``
+        }`
+      );
     })
   }
 
